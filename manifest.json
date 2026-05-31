@@ -1,0 +1,24 @@
+{
+    "name": "group_admin_plugin",
+    "version": "1.0.0",
+    "description": "群管理插件：通过 /ga 命令禁言/踢出（基于 NapCat API）",
+    "author": "MoFox Team",
+    "license": "GPL-3.0",
+    "categories": ["moderation"],
+    "tags": ["禁言", "踢出", "群管理", "NapCat", "QQ", "管理员"],
+    "dependencies": {
+        "plugins": [],
+        "components": [
+            "napcat_adapter:adapter:napcat_adapter"
+        ]
+    },
+    "include": [
+        {
+            "component_type": "command",
+            "component_name": "ga",
+            "dependencies": []
+        }
+    ],
+    "entry_point": "plugin.py",
+    "min_core_version": "1.0.0"
+}
