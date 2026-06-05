@@ -231,6 +231,8 @@ class GroupAdminCommand(BaseCommand):
     @cmd_route("help")
     async def handle_help(self) -> tuple[bool, str]:
         """显示帮助信息。"""
+        if not await self._require_admin():
+            return False, "no permission"
         await self._reply(_USAGE)
         return True, "ok"
 
