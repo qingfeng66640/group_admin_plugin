@@ -1,10 +1,10 @@
 # Group Admin Plugin — 群管理插件
 
-基于 NapCat API 的群管理命令插件，支持禁言、解除禁言、踢出群成员等操作。
+基于 OneBot API 的群管理命令插件，支持禁言、解除禁言、踢出群成员等操作。
 
 ## 适用平台
 
-- QQ（通过 NapCat）
+- QQ（通过 OneBot）
 
 ## 安装
 
@@ -64,7 +64,7 @@ admin_users = ["qq:12345678", "qq:87654321"]
 | `kick` | `踢出` | 踢出群成员 | `@用户 [true/false]` |
 | `help` | `帮助` | 显示帮助信息 | 无 |
 
-> 参数中 `@用户` 支持 NapCat 的 AT 格式 `@<昵称:用户ID>` 或直接输入用户 ID。
+> 参数中 `@用户` 支持 OneBot 的 AT 格式 `@<昵称:用户ID>` 或直接输入用户 ID。
 
 ### 详细用法
 
@@ -126,13 +126,13 @@ admin_users = ["qq:12345678", "qq:87654321"]
 | 非管理员使用 | "无权使用该命令：你不在管理员白名单中。" |
 | 非群聊中使用群管理命令 | "禁言/解除禁言/踢出只能在群聊中使用。" |
 | 缺少必要参数 | "用法：/ga mute @用户 [秒数]" |
-| NapCat API 权限不足 | "xxx 失败：权限不足。需要机器人为群主/管理员" |
-| NapCat 未启动 | "napcat_adapter 未启动：请先启用并启动 napcat_adapter 插件。" |
+| OneBot API 权限不足 | "xxx 失败：权限不足。需要机器人为群主/管理员" |
+| OneBot 未启动 | "onebot_adapter 未启动：请先启用并启动 onebot_adapter 插件。" |
 
 ## 依赖
 
-- `napcat_adapter:adapter:napcat_adapter` — NapCat 适配器，提供 OneBot API 调用能力
-- Neo-MoFox Core >= 1.0.0
+- `onebot_adapter:adapter:onebot_adapter` — OneBot 适配器，提供 OneBot API 调用能力
+- Neo-MoFox Core >= 1.2.0-rc
 
 ## 开发
 

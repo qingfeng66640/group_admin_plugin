@@ -23,7 +23,7 @@ from src.core.components.base.command import BaseCommand, cmd_route
 
 logger = get_logger("group_admin_plugin.command")
 
-_NAPCAT_ADAPTER_SIGNATURE = "napcat_adapter:adapter:napcat_adapter"
+_ONEBOT_ADAPTER_SIGNATURE = "onebot_adapter:adapter:onebot_adapter"
 
 # 匹配框架展开后的 AT 段，格式：@<昵称:用户ID>
 _AT_PATTERN = re.compile(r"^@<([^>:]*):([^>]+)>$")
@@ -41,7 +41,7 @@ _USAGE = """\
   /ga kick @用户 true"""
 
 
-# ── NapCat API 辅助函数 ────────────────────────────────────────────────────────
+# ── OneBot API 辅助函数 ────────────────────────────────────────────────────────
 
 
 def _coerce_int_if_digit(value: Any) -> Any:
@@ -58,8 +58,8 @@ def _coerce_int_if_digit(value: Any) -> Any:
     return value
 
 
-def _format_napcat_failure(action: str, resp: dict[str, Any]) -> str:
-    """将 NapCat 响应格式化为更易懂的失败文本。"""
+def _format_onebot_failure(action: str, resp: dict[str, Any]) -> str:
+    """将 OneBot 响应格式化为更易懂的失败文本。"""
     _ = str(resp.get("status") or "").strip().lower()
     retcode = resp.get("retcode")
     message = str(resp.get("message") or "").strip()
@@ -87,34 +87,35 @@ def _format_napcat_failure(action: str, resp: dict[str, Any]) -> str:
     if "超时" in detail or "timeout" in lowered:
         return (
             f"{action} 失败：请求超时。\n"
-            "- 请检查 napcat_adapter 是否已连接 NapCat\n"
-            "- 请检查 NapCat 服务是否正常\n"
+            "- 请检查 onebot_adapter 是否已连接 OneBot 服务\n"
+            "- 请检查 OneBot 服务是否正常\n"
             f"- 原始信息：{detail}"
         )
 
     return f"{action} 失败：{detail}"
 
 
-async def _call_napcat_api(
+async def _call_onebot_api(
     *,
     action_name: str,
     params: dict[str, Any],
     timeout: float = 30.0,
 ) -> tuple[bool, str]:
-    """调用 napcat_adapter API 并统一解析响应。"""
-    adapter = adapter_api.get_adapter(_NAPCAT_ADAPTER_SIGNATURE)
+    """调用 onebot_adapter API 并统一解析响应。"""
+    adapter = adapter_api.get_adapter(_ONEBOT_ADAPTER_SIGNATURE)
     if adapter is None:
-        return False, "napcat_adapter 未启动：请先启用并启动 napcat_adapter 插件。"
+        return False, "onebot_adapter 未启动：请先启用并启动 onebot_adapter 插件。"
 
-    if not hasattr(adapter, "send_napcat_api"):
-        return False, "napcat_adapter 不支持 send_napcat_api：请确认 napcat_adapter 版本兼容。"
+    send_api = getattr(adapter, "send_onebot_api", None)
+    if send_api is None:
+        return False, "onebot_adapter 不支持 send_onebot_api：请确认 onebot_adapter 版本兼容。"
 
     try:
-        resp = await adapter.send_napcat_api(action_name, params, timeout=timeout)  # type: ignore[attr-defined]
+        resp = await send_api(action_name, params, timeout=timeout)
     except Exception as exc:
         return (
             False,
-            f"调用 NapCat API 异常：{exc}\n- action={action_name}\n- params={params}",
+            f"调用 OneBot API 异常：{exc}\n- action={action_name}\n- params={params}",
         )
 
     status = str(resp.get("status") or "").strip().lower()
@@ -122,7 +123,7 @@ async def _call_napcat_api(
     if status == "ok" and (retcode == 0 or retcode is None):
         return True, "ok"
 
-    return False, _format_napcat_failure(action_name, resp)
+    return False, _format_onebot_failure(action_name, resp)
 
 
 # ── 命令类 ──────────────────────────────────────────────────────────────────
@@ -137,6 +138,10 @@ class GroupAdminCommand(BaseCommand):
     command_name: str = "ga"
     command_description: str = "群管理命令（管理员专用）：禁言/解除禁言/踢出群成员"
     associated_platforms: list[str] = ["qq"]
+
+    async def execute(self, message_text: str) -> tuple[bool, str]:
+        """执行群管理命令。"""
+        return await super().execute(message_text)
 
     @classmethod
     def match(cls, parts: list[str]) -> int:
@@ -288,7 +293,7 @@ class GroupAdminCommand(BaseCommand):
             await self._reply("禁言时长必须为正整数（单位：秒）。")
             return False, "invalid duration"
 
-        ok, msg = await _call_napcat_api(
+        ok, msg = await _call_onebot_api(
             action_name="set_group_ban",
             params={
                 "group_id": group_id,
@@ -340,7 +345,7 @@ class GroupAdminCommand(BaseCommand):
             await self._reply("解除禁言只能在群聊中使用。")
             return False, "not in group"
 
-        ok, msg = await _call_napcat_api(
+        ok, msg = await _call_onebot_api(
             action_name="set_group_ban",
             params={
                 "group_id": group_id,
@@ -395,7 +400,7 @@ class GroupAdminCommand(BaseCommand):
 
         reject = reject_add_request.lower() in ("true", "1", "yes", "on")
 
-        ok, msg = await _call_napcat_api(
+        ok, msg = await _call_onebot_api(
             action_name="set_group_kick",
             params={
                 "group_id": group_id,

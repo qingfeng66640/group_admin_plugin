@@ -1,6 +1,6 @@
 """group_admin_plugin 插件注册入口。
 
-遵循 napcat_extension 的模式，将 @register_plugin 放在独立的 plugin.py 中，
+遵循 onebot adapter 的模式，将 @register_plugin 放在独立的 plugin.py 中，
 避免 __init__.py 作为包导入时与 manifest.json entry_point 加载产生冲突。
 """
 
@@ -17,11 +17,11 @@ class GroupAdminPlugin(BasePlugin):
     """群管理插件：通过 /ga 命令禁言/踢出。"""
 
     plugin_name: str = "group_admin_plugin"
-    plugin_description: str = "群管理插件：通过 /ga 命令禁言/踢出（基于 NapCat API）"
-    plugin_version: str = "1.0.0"
+    plugin_description: str = "群管理插件：通过 /ga 命令禁言/踢出（基于 OneBot API）"
+    plugin_version: str = "1.0.3"
 
     configs: list[type] = [GroupAdminConfig]
-    dependent_components: list[str] = ["napcat_adapter:adapter:napcat_adapter"]
+    dependent_components: list[str] = ["onebot_adapter:adapter:onebot_adapter"]
 
     def get_components(self) -> list[type]:
         """返回本插件提供的组件类。"""

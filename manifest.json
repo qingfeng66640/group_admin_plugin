@@ -1,7 +1,7 @@
 {
     "name": "group_admin_plugin",
-    "version": "1.0.2",
-    "description": "群管理插件：通过 /ga 命令禁言/踢出（基于 NapCat API）",
+    "version": "1.0.3",
+    "description": "群管理插件：通过 /ga 命令禁言/踢出（基于 OneBot API）",
     "author": "qf",
     "license": "GPL-3.0",
     "categories": [
@@ -11,14 +11,14 @@
         "禁言",
         "踢出",
         "群管理",
-        "NapCat",
+        "OneBot",
         "QQ",
         "管理员"
     ],
     "dependencies": {
         "plugins": [],
         "components": [
-            "napcat_adapter:adapter:napcat_adapter"
+            "onebot_adapter:adapter:onebot_adapter"
         ]
     },
     "include": [
@@ -29,5 +29,5 @@
         }
     ],
     "entry_point": "plugin.py",
-    "min_core_version": "1.0.0"
+    "min_core_version": "1.2.0-rc"
 }

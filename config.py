@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from src.core.components.base.config import BaseConfig, Field, SectionBase, config_section
 
 
